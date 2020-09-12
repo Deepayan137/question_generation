@@ -6,7 +6,7 @@ from typing import Dict, List, Optional
 import torch
 import nlp
 from transformers import T5Tokenizer, BartTokenizer, HfArgumentParser
-
+import pdb
 
 logger = logging.getLogger(__name__)
 
@@ -133,6 +133,8 @@ TASK_TO_FILTER_FN = {
     'multi': filter_multi
 }
 
+_TRAIN_FILE = 'data/amazon_qg/data/qa_Beauty_train.csv'
+_VAL_FILE = 'data/amazon_qg/data/qa_Beauty_val.csv'
 
 def main():
     parser = HfArgumentParser((DataTrainingArguments,))
@@ -151,10 +153,10 @@ def main():
         tokenizer = T5Tokenizer.from_pretrained("bart-base")
     
     tokenizer.add_tokens(['<sep>', '<hl>'])
-    
-    train_dataset = nlp.load_dataset(data_args.dataset_path, name=data_args.qg_format, split=nlp.Split.TRAIN)
-    valid_dataset = nlp.load_dataset(data_args.dataset_path, name=data_args.qg_format, split=nlp.Split.VALIDATION)
-
+    # train_dataset = nlp.load_dataset(data_args.dataset_path, name=data_args.qg_format, split=nlp.Split.TRAIN)
+    # valid_dataset = nlp.load_dataset(data_args.dataset_path, name=data_args.qg_format, split=nlp.Split.VALIDATION)
+    train_dataset = nlp.load_dataset('data/amazon_qg/', data_files=_TRAIN_FILE, split=nlp.Split.TRAIN)
+    valid_dataset = nlp.load_dataset('data/amazon_qg/', data_files=_VAL_FILE, split=nlp.Split.VALIDATION)
     processor = DataProcessor(
         tokenizer,
         model_type=data_args.model_type,
@@ -162,17 +164,16 @@ def main():
         max_target_length=data_args.max_target_length
     )
 
-    train_dataset = train_dataset.filter(TASK_TO_FILTER_FN[data_args.task])
-    if data_args.task == 'multi' and data_args.valid_for_qg_only:
-        logger.info("processing valid data only for qg task")
-        valid_dataset = valid_dataset.filter(filter_qg)
-    else:
-        valid_dataset = valid_dataset.filter(TASK_TO_FILTER_FN[data_args.task])
+    # train_dataset = train_dataset.filter(TASK_TO_FILTER_FN[data_args.task])
+    # if data_args.task == 'multi' and data_args.valid_for_qg_only:
+    #     logger.info("processing valid data only for qg task")
+    #     valid_dataset = valid_dataset.filter(filter_qg)
+    # else:
+    #     valid_dataset = valid_dataset.filter(TASK_TO_FILTER_FN[data_args.task])
 
-    
     train_dataset = processor.process(train_dataset)
     valid_dataset = processor.process(valid_dataset)
-
+    
     columns = ["source_ids", "target_ids", "attention_mask"]
     train_dataset.set_format(type='torch', columns=columns)
     valid_dataset.set_format(type='torch', columns=columns)

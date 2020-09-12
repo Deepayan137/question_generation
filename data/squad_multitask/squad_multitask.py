@@ -109,7 +109,7 @@ class SquadMultitask(nlp.GeneratorBasedBuilder):
             "dev": os.path.join(self._URL, self._DEV_FILE),
         }
         downloaded_files = dl_manager.download_and_extract(urls_to_download)
-
+        
         return [
             nlp.SplitGenerator(name=nlp.Split.TRAIN, gen_kwargs={"filepath": downloaded_files["train"]}),
             nlp.SplitGenerator(name=nlp.Split.VALIDATION, gen_kwargs={"filepath": downloaded_files["dev"]}),

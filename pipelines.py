@@ -12,6 +12,8 @@ from transformers import(
     PreTrainedTokenizer,
 )
 
+import pdb
+
 logger = logging.getLogger(__name__)
 
 class QGPipeline:
@@ -228,7 +230,6 @@ class E2EQGPipeline:
     
     def __call__(self, context: str, **generate_kwargs):
         inputs = self._prepare_inputs_for_e2e_qg(context)
-
         # TODO: when overrding default_generate_kwargs all other arguments need to be passsed
         # find a better way to do this
         if not generate_kwargs:
@@ -384,3 +385,15 @@ def pipeline(
         return task_class(model=model, tokenizer=tokenizer, ans_model=ans_model, ans_tokenizer=ans_tokenizer, qg_format=qg_format, use_cuda=use_cuda)
     else:
         return task_class(model=model, tokenizer=tokenizer, ans_model=model, ans_tokenizer=tokenizer, qg_format=qg_format, use_cuda=use_cuda)
+
+nlp = pipeline("e2e-qg")
+text1 = """The product stays for long. It is available at a reasonable price"""
+text2 = """The way the product was packed was excellent!"""
+text3 = """the product has a thick gel like structure """
+text4 = """The product has a mild fragrance"""
+text5 = """The product is filled upto the brim of the container. It's completely worth the money"""
+text6 = """The product gives a very slight (almost negligible) tint to the lips"""
+text7 = """The product lasts for about 5 to 6 hours"""
+text8 = """The product has a nice coverage and it suits to fair skin"""
+
+print(nlp(text8))

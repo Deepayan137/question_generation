@@ -23,7 +23,8 @@ from transformers import (
 from trainer import Trainer
 from data_collator import T2TDataCollator
 from utils import freeze_embeds, assert_not_all_frozen
-
+from transformers import T5Tokenizer, BartTokenizer, HfArgumentParser
+import pdb
 MODEL_TYPE_TO_TOKENIZER = {
     "t5": T5Tokenizer,
     "bart": BartTokenizer,
@@ -141,7 +142,7 @@ def main(args_file=None):
     os.environ["WANDB_PROJECT"] = "question-generation"
 
     # Load pretrained model and tokenizer
-    #
+    
     # Distributed training:
     # The .from_pretrained methods guarantee that only one local process can concurrently
     # download model & vocab.
@@ -150,6 +151,7 @@ def main(args_file=None):
         model_args.tokenizer_name_or_path if model_args.tokenizer_name_or_path else model_args.model_name_or_path,
         cache_dir=model_args.cache_dir,
     )
+    # tokenizer = T5Tokenizer.from_pretrained("t5-base")
     model = AutoModelForSeq2SeqLM.from_pretrained(
         model_args.model_name_or_path,
         cache_dir=model_args.cache_dir,
